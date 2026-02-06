@@ -36,7 +36,6 @@ SPRINT 1: lister les réservations
 7. Interface de filtrage (10 min)
    - Ajouter un formulaire avec champs de date
    - Créer les inputs pour date début et date fin
-   - Implémenter l'action de filtrage
    - Afficher les résultats filtrés
 
 ===============================================
