@@ -1,34 +1,501 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Réservations API</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Réservations</title>
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --liquid-bg: rgba(255, 255, 255, 0.12);
+      --liquid-bg-heavy: rgba(255, 255, 255, 0.22);
+      --liquid-border: rgba(255, 255, 255, 0.30);
+      --liquid-border-bright: rgba(255, 255, 255, 0.50);
+      --liquid-shadow: 0 8px 40px rgba(0, 0, 0, 0.12), 0 2px 12px rgba(0, 0, 0, 0.08);
+      --liquid-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.18), 0 4px 16px rgba(0, 0, 0, 0.10);
+      --liquid-blur: 24px;
+      --liquid-radius: 28px;
+      --accent: #007AFF;
+      --accent-hover: #0056CC;
+      --accent-glow: rgba(0, 122, 255, 0.25);
+      --green: #34C759;
+      --purple: #AF52DE;
+      --text: rgba(255, 255, 255, 0.92);
+      --text-dim: rgba(255, 255, 255, 0.60);
+      --text-dark: #1d1d1f;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      min-height: 100vh;
+      color: var(--text);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ── Background image ── */
+    .bg-image {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: url('/images/ChatGPT%20Image%206%20f%C3%A9vr.%202026%2C%2019_26_35.png') center/cover no-repeat;
+    }
+
+    /* Dark overlay for readability */
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.25) 0%,
+        rgba(0, 0, 0, 0.40) 100%
+      );
+    }
+
+    /* ── Keyframes ── */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes liquidShine {
+      0%   { transform: translateX(-100%) rotate(12deg); }
+      100% { transform: translateX(200%) rotate(12deg); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50%      { opacity: 1; }
+    }
+
+    /* ── Container ── */
+    .container {
+      position: relative;
+      z-index: 2;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* ── Liquid Glass mixin ── */
+    .liquid {
+      background: var(--liquid-bg);
+      backdrop-filter: blur(var(--liquid-blur)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--liquid-blur)) saturate(180%);
+      border: 1px solid var(--liquid-border);
+      border-radius: var(--liquid-radius);
+      box-shadow: var(--liquid-shadow);
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.4s ease, transform 0.3s ease, border-color 0.3s ease;
+    }
+    .liquid:hover {
+      box-shadow: var(--liquid-shadow-hover);
+      border-color: var(--liquid-border-bright);
+    }
+
+    /* Liquid shine sweep */
+    .liquid::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: 0;
+      width: 60%;
+      height: 200%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.08),
+        rgba(255, 255, 255, 0.15),
+        rgba(255, 255, 255, 0.08),
+        transparent
+      );
+      transform: translateX(-100%) rotate(12deg);
+      animation: liquidShine 6s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* Inner top-edge highlight */
+    .liquid::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 8%; right: 8%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+      animation: fadeIn 0.6s ease-out;
+    }
+    .header h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #fff;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+    .header h1 span {
+      background: linear-gradient(135deg, #fff 20%, rgba(255,255,255,0.6));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .header p {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      margin-top: 8px;
+      font-weight: 400;
+    }
+
+    /* ── Filter card ── */
+    .filter-card {
+      padding: 22px 28px;
+      margin-bottom: 24px;
+      animation: fadeIn 0.7s ease-out;
+    }
+    .filter-card form {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .filter-card label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      letter-spacing: 0.3px;
+    }
+    .filter-card input[type="date"] {
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 10px 16px;
+      border: 1px solid rgba(255,255,255,0.20);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.10);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      outline: none;
+      transition: all 0.3s ease;
+      min-width: 180px;
+    }
+    .filter-card input[type="date"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+      background: rgba(255,255,255,0.15);
+    }
+    /* Fix date picker icon color for dark bg */
+    .filter-card input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 10px 24px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px var(--accent-glow);
+    }
+    .btn-primary:active { transform: translateY(0) scale(0.97); }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.10);
+      color: var(--text-dim);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      border-color: rgba(255,255,255,0.30);
+    }
+
+    /* ── Error ── */
+    .error-msg {
+      margin-bottom: 20px;
+      padding: 16px 22px;
+      border-radius: 18px;
+      background: rgba(255, 59, 48, 0.15);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 59, 48, 0.30);
+      color: #ff6b6b;
+      font-size: 0.88rem;
+      font-weight: 500;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    /* ── Table card ── */
+    .table-card {
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      position: relative;
+      z-index: 2;
+    }
+
+    thead th {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      padding: 18px 20px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+
+    tbody tr {
+      transition: all 0.3s ease;
+      animation: slideUp 0.45s ease-out backwards;
+    }
+    tbody tr:nth-child(1)  { animation-delay: 0.05s; }
+    tbody tr:nth-child(2)  { animation-delay: 0.10s; }
+    tbody tr:nth-child(3)  { animation-delay: 0.15s; }
+    tbody tr:nth-child(4)  { animation-delay: 0.20s; }
+    tbody tr:nth-child(5)  { animation-delay: 0.25s; }
+    tbody tr:nth-child(6)  { animation-delay: 0.30s; }
+    tbody tr:nth-child(7)  { animation-delay: 0.35s; }
+    tbody tr:nth-child(8)  { animation-delay: 0.40s; }
+    tbody tr:nth-child(9)  { animation-delay: 0.45s; }
+    tbody tr:nth-child(10) { animation-delay: 0.50s; }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    tbody td {
+      font-size: 0.9rem;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: var(--text);
+      font-weight: 400;
+      vertical-align: middle;
+    }
+
+    /* ── Pill badges ── */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .pill-id {
+      background: rgba(0, 122, 255, 0.18);
+      color: #5ac8fa;
+      border: 1px solid rgba(0, 122, 255, 0.25);
+    }
+    .pill-date {
+      background: rgba(52, 199, 89, 0.15);
+      color: #30d158;
+      border: 1px solid rgba(52, 199, 89, 0.22);
+    }
+    .pill-time {
+      background: rgba(175, 82, 222, 0.15);
+      color: #bf5af2;
+      border: 1px solid rgba(175, 82, 222, 0.22);
+    }
+    .pill-pax {
+      background: rgba(255, 159, 10, 0.15);
+      color: #ffa00a;
+      border: 1px solid rgba(255, 159, 10, 0.22);
+    }
+
+    /* ── Hotel cell ── */
+    .hotel-name {
+      font-weight: 600;
+      color: #fff;
+    }
+    .hotel-ville {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-dim);
+      animation: fadeIn 0.6s ease-out;
+    }
+    .empty-state .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 14px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .empty-state p {
+      font-size: 1rem;
+    }
+
+    /* ── Stat bar ── */
+    .stat-bar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      animation: fadeIn 0.75s ease-out;
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      padding: 18px 24px;
+      flex: 1;
+      min-width: 140px;
+      text-align: center;
+    }
+    .stat-item .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .stat-item .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-top: 4px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .container { padding: 20px 12px 48px; }
+      .header h1 { font-size: 1.7rem; }
+      .filter-card { padding: 16px; }
+      .filter-card form { flex-direction: column; align-items: stretch; }
+      .filter-card input[type="date"] { width: 100%; }
+      thead th, tbody td { padding: 12px 14px; font-size: 0.82rem; }
+      .stat-bar { flex-direction: column; }
+      .pill { font-size: 0.75rem; padding: 4px 10px; }
+    }
+  </style>
 </head>
 <body>
-  <h1>Réservations</h1>
-  <form method="get" action="/api-data">
-    Filtrer par date (YYYY-MM-DD): <input type="text" name="date" value="" />
-    <button type="submit">Filtrer</button>
-  </form>
-  <table border="1" cellpadding="6" cellspacing="0">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Client</th>
-        <th>Hôtel</th>
-        <th>Ville</th>
-        <th>Arrivée</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr th:each="res : ${reservations}">
-        <td th:text="${res['id']}">1</td>
-        <td th:text="${res['idClient']}">C001</td>
-        <td th:text="${res['hotelName']}">Hotel</td>
-        <td th:text="${res['hotelVille']}">Ville</td>
-        <td th:text="${res['dateHeureArrivee']}">2026-01-01T12:00:00</td>
-      </tr>
-    </tbody>
-  </table>
+
+  <div class="bg-image"></div>
+  <div class="bg-overlay"></div>
+
+  <div class="container">
+
+    <!-- Header -->
+    <div class="header">
+      <h1><span>Réservations</span></h1>
+      <p>Gestion des réservations hôtelières</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-bar" th:if="${reservations != null and !reservations.isEmpty()}">
+      <div class="liquid stat-item">
+        <div class="stat-value" th:text="${#lists.size(reservations)}">0</div>
+        <div class="stat-label">Réservations</div>
+      </div>
+      <div class="liquid stat-item">
+        <div class="stat-value">🏨</div>
+        <div class="stat-label">Hôtels</div>
+      </div>
+      <div class="liquid stat-item">
+        <div class="stat-value">✈️</div>
+        <div class="stat-label">Voyageurs</div>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="liquid filter-card">
+      <form method="get" action="/api-data">
+        <label for="date">📅 Filtrer par date</label>
+        <input type="date" id="date" name="date" th:value="${filterDate}" />
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+        <a href="/api-data" class="btn btn-ghost">Réinitialiser</a>
+      </form>
+    </div>
+
+    <!-- Error -->
+    <div class="error-msg" th:if="${error}" th:text="${error}"></div>
+
+    <!-- Table -->
+    <div class="liquid table-card">
+      <table th:if="${reservations != null and !reservations.isEmpty()}">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Client</th>
+            <th>Hôtel</th>
+            <th>Date</th>
+            <th>Heure</th>
+            <th>Passagers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="res : ${reservations}">
+            <td><span class="pill pill-id" th:text="${res['id']}">1</span></td>
+            <td th:text="${res['idClient']}">C001</td>
+            <td>
+              <div class="hotel-name" th:text="${res['hotelName']}">Hôtel</div>
+              <div class="hotel-ville" th:text="${res['hotelVille']}">Ville</div>
+            </td>
+            <td>
+              <span class="pill pill-date"
+                    th:text="${res['dateHeureArrivee'] != null
+                      ? (res['dateHeureArrivee']['date'] != null
+                          ? res['dateHeureArrivee']['date']
+                          : res['dateHeureArrivee'])
+                      : '—'}">
+                2026-01-01
+              </span>
+            </td>
+            <td>
+              <span class="pill pill-time"
+                    th:text="${res['dateHeureArrivee'] != null
+                      ? (res['dateHeureArrivee']['heure'] != null
+                          ? res['dateHeureArrivee']['heure']
+                          : '—')
+                      : '—'}">
+                16:24
+              </span>
+            </td>
+            <td><span class="pill pill-pax" th:text="${res['nbPassager']}">1</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Empty -->
+      <div class="empty-state" th:if="${reservations == null or reservations.isEmpty()}">
+        <div class="empty-icon">✈️</div>
+        <p>Aucune réservation trouvée</p>
+      </div>
+    </div>
+
+  </div>
+
 </body>
 </html>
