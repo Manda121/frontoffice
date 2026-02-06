@@ -28,10 +28,19 @@ public class ApiController {
             model.addAttribute("error", "Impossible de récupérer les données du backoffice: " + ex.getMessage());
         }
 
-        // Filter by date if provided (assuming dateHeureArrivee is in format YYYY-MM-DDTHH:MM:SS)
+        // Filter by date if provided (dateHeureArrivee may be an object {date, heure})
         if (date != null && !date.isEmpty()) {
             reservations = reservations.stream()
-                .filter(res -> res.get("dateHeureArrivee") != null && res.get("dateHeureArrivee").toString().startsWith(date))
+                .filter(res -> {
+                    Object d = res.get("dateHeureArrivee");
+                    if (d == null) return false;
+                    if (d instanceof Map) {
+                        Object dateField = ((Map<?,?>) d).get("date");
+                        return dateField != null && dateField.toString().startsWith(date);
+                    } else {
+                        return d.toString().startsWith(date);
+                    }
+                })
                 .collect(Collectors.toList());
         }
 
