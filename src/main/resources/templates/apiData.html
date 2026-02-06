@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Réservations API</title>
+</head>
+<body>
+  <h1>Réservations</h1>
+  <form method="get" action="/api-data">
+    Filtrer par date (YYYY-MM-DD): <input type="text" name="date" value="" />
+    <button type="submit">Filtrer</button>
+  </form>
+  <table border="1" cellpadding="6" cellspacing="0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Client</th>
+        <th>Hôtel</th>
+        <th>Ville</th>
+        <th>Arrivée</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="res : ${reservations}">
+        <td th:text="${res['id']}">1</td>
+        <td th:text="${res['idClient']}">C001</td>
+        <td th:text="${res['hotelName']}">Hotel</td>
+        <td th:text="${res['hotelVille']}">Ville</td>
+        <td th:text="${res['dateHeureArrive']}">2026-01-01T12:00:00</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>
