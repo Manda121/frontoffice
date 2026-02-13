@@ -1,0 +1,20 @@
+TEAM LEAD: ETU03377 RAZAFINJATOVO Mialy Soa Lucia
+Dev backoffice: ETU003280 MITANTSOA Notiavina Mandaniaina
+Dev frontoffice: ETU003354 RANTHOLY Kamel Tommy
+
+===============================================
+SPRINT 2: Ajout fichier de configuration et Ajout token dans l'url
+===============================================
+
+1. Configuration initiale du projet (10 min)
+   - Configurer les dépendances nécessaires (Jackson pour JSON, HTTP client)
+   - Tester la connexion à l'API localhost:8080/api/reservations
+
+2. Ajout fichier de configuration du token(25min)
+
+3. Tester la connexion du token dans l'url(5min)
+
+===============================================
+ESTIMATION TOTALE: 40 min
+===============================================
+
