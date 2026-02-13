@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,10 +13,14 @@ import java.util.stream.Collectors;
 @Controller
 public class ApiController {
 
+    @Value("${api.token}")
+    private String apiToken;
+
     @GetMapping("/api-data")
+    @SuppressWarnings("unchecked")
     public String getApiData(@RequestParam(value = "date", required = false) String date, Model model) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8080/backoffice-reservation/api/reservations";
+        String url = "http://localhost:8080/backoffice-reservation/api/reservations?token=" + apiToken;
 
         List<Map<String, Object>> reservations = List.of();
         try {
