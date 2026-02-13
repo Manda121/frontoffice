@@ -1,44 +1,20 @@
-TEAM LEAD: ETU03280 MITANTSOA Notiavina Mandaniaina
-Dev backend: ETU003354
-Dev front_end: ETU003377
+TEAM LEAD: ETU03377 RAZAFINJATOVO Mialy Soa Lucia
+Dev backoffice: ETU003280 MITANTSOA Notiavina Mandaniaina
+Dev frontoffice: ETU003354 RANTHOLY Kamel Tommy
 
 ===============================================
-SPRINT 1: lister les réservations
+SPRINT 2: Ajout fichier de configuration et Ajout token dans l'url
 ===============================================
 
 1. Configuration initiale du projet (10 min)
    - Configurer les dépendances nécessaires (Jackson pour JSON, HTTP client)
    - Tester la connexion à l'API localhost:8080/api/reservations
 
-2. Création du modèle Reservation (15 min)
-   - Créer la classe Reservation.java avec les attributs:
-     * id
-     * idclient
-     * nbpassager
-     * dateheuredebut
-     * hotel
-   - Ajouter les getters/setters et constructeurs
+2. Ajout fichier de configuration du token(25min)
 
-4. Création du contrôleur d'affichage (15 min)
-   - Créer un contrôleur (ReservationController.java) avec annotation @MyURL
-   - Méthode pour afficher la liste des réservations
-   - Passer les données à la vue JSP
-
-5. Création de la vue JSP pour afficher les réservations (10min)
-   - Créer reservation-list.jsp
-   - Afficher les réservations dans un tableau HTML
-   - Styliser avec CSS basique
-   - Afficher: id, client, nb passagers, date/heure, hôtel
-
-6. Développement du filtre par date (10min)
-   - Créer une méthode dans ReservationController.java pour filtrer par date (sans heure)
-
-7. Interface de filtrage (10 min)
-   - Ajouter un formulaire avec champs de date
-   - Créer les inputs pour date début et date fin
-   - Afficher les résultats filtrés
+3. Tester la connexion du token dans l'url(5min)
 
 ===============================================
-ESTIMATION TOTALE: 70 min
+ESTIMATION TOTALE: 40 min
 ===============================================
 
